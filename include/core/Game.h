@@ -1,5 +1,7 @@
 #pragma once
 
+#include "managers/SceneManager.h"
+
 class Game
 {
     public: 
@@ -10,9 +12,10 @@ class Game
 
     private:
         void Initialize();
-        void Update();
+        void Update(float dt);
         void Draw();
         void Shutdown();
 
         bool running;
+        SceneManager sceneManager;
 };

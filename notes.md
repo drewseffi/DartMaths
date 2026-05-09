@@ -1,0 +1,1 @@
+Using virtual in the IScene is important because when we call "scene"->Draw(), if we do not use virtuals it will use the base IScene::Draw. Using "= 0" makes a scene entirely virtual so an IScene cannot be instantiated.
