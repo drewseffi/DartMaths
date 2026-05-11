@@ -11,10 +11,32 @@ class Dartboard
         int GenerateScore(Vector2 hitPos);
 
     private:
+        void InitialiseSectors();
+
         void DrawSectors();
         void DrawBullseye();
         void DrawNumbers();
 
         Vector2 center;
         float radius;
+
+        float bullRadius;
+        float outerBullRadius;
+        float trebleRingInner;
+        float trebleRingOuter;
+        float doubleRingInner;
+        float doubleRingOuter;
+
+        struct Sector
+        {
+            int value;
+
+            float startAngle;
+            float endAngle;
+
+            Color baseColor;
+            Color ringColor;
+        };
+
+        Sector sectors[20];
 };
