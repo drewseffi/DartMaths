@@ -5,7 +5,7 @@
 
 #include "raylib.h"
 
-GameScene::GameScene(SceneManager& manager): IScene(manager)
+GameScene::GameScene(SceneManager& manager): IScene(manager), dartboard({400, 400}, 300.0f)
 {
 
 }
@@ -20,7 +20,5 @@ void GameScene::Update(float dt)
 
 void GameScene::Draw()
 {
-    DrawText("GAME SCENE", 400, 200, 40, WHITE);
-
-    DrawText("PRESS ESC TO RETURN", 350, 300, 20, LIGHTGRAY);
+    dartboard.Draw();
 }
