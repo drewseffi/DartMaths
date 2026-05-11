@@ -2,6 +2,8 @@
 
 #include <math.h>
 
+#include <stdio.h>
+
 Dartboard::Dartboard(Vector2 center, float radius)
 {
     this->center = center;
@@ -27,11 +29,14 @@ void Dartboard::InitialiseSectors()
     {
         sectors[i].value = scores[i];
 
-        sectors[i].startAngle = i * 18.0f;
+        sectors[i].startAngle = i * 18.0f - 99.0f;
         sectors[i].endAngle = sectors[i].startAngle + 18.0f;
 
         sectors[i].baseColor = (i % 2 == 0) ? BLACK : BEIGE;
         sectors[i].ringColor = (i % 2 == 0) ? RED : GREEN;
+
+        printf("Start: %f\n", sectors[i].startAngle);
+        printf("End: %f\n", sectors[i].endAngle);
     }
 }
 
@@ -73,22 +78,9 @@ int Dartboard::GenerateScore(Vector2 hit)
         multiplier = 1;
     }
 
-    if (angle < 0.0f)
-    {
-        angle += 360.0f;
-    }
-
-    angle += 99;
-
-    if (angle < 0.0f)
-    {
-        angle += 360.0f;
-    }
-
     for (int i = 0; i < 20; i++)
     {
-        if (angle >= sectors[i].startAngle &&
-            angle <  sectors[i].endAngle)
+        if (angle >= sectors[i].startAngle && angle < sectors[i].endAngle)
         {
             return sectors[i].value * multiplier;
         }
@@ -118,11 +110,11 @@ void Dartboard::DrawSectors()
         Sector& sector = sectors[i];
 
         //--Draw sectors
-        DrawRing(center, 0.0f, radius, sector.startAngle - 99.0f, sector.endAngle - 99.0f, 32, sector.baseColor);
+        DrawRing(center, 0.0f, radius, sector.startAngle, sector.endAngle, 32, sector.baseColor);
 
         //--Draw double and treble sectors
-        DrawRing(center, trebleRingInner, trebleRingOuter, sector.startAngle - 99.0f, sector.endAngle - 99.0f, 32, sector.ringColor);
-        DrawRing(center, doubleRingInner, doubleRingOuter, sector.startAngle - 99.0f, sector.endAngle - 99.0f, 32, sector.ringColor);
+        DrawRing(center, trebleRingInner, trebleRingOuter, sector.startAngle, sector.endAngle, 32, sector.ringColor);
+        DrawRing(center, doubleRingInner, doubleRingOuter, sector.startAngle, sector.endAngle, 32, sector.ringColor);
     }
 }
 
