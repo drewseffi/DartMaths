@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "scenes/IScene.h"
 
 #include "core/Dartboard.h"
@@ -14,4 +16,5 @@ class GameScene : public IScene
 
     private:
         Dartboard dartboard;
+        std::vector<Vector2> hits;
 };
