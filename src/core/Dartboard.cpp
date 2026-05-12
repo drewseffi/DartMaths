@@ -47,6 +47,26 @@ void Dartboard::Draw()
     DrawNumbers();
 }
 
+std::vector<Vector2> Dartboard::GenerateAllSectors()
+{
+    std::vector<Vector2> allSectors;
+
+    for (int i = 0; i < 20; i++)
+    {
+        Vector2 hit;
+
+        float angle = (sectors[i].startAngle + 1.0f) * DEG2RAD;
+        float distance = (radius / 3) * 2;
+
+        hit.x = center.x + cos(angle) * distance;
+        hit.y = center.y + sin(angle) * distance;
+
+        allSectors.push_back(hit);
+    }
+
+    return allSectors;
+}
+
 int Dartboard::GenerateScore(Vector2 hit)
 {
     float ex = hit.x - center.x;
@@ -54,6 +74,13 @@ int Dartboard::GenerateScore(Vector2 hit)
 
     float distance = sqrt(ex * ex + ey * ey);
     float angle = atan2(ey, ex) * RAD2DEG;
+
+    if (angle < -99.0f)
+    {
+        angle += 360.0f;
+    }
+
+    printf("Hit angle: %f\n", angle);
 
     int multiplier = 1;
 

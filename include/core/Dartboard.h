@@ -1,6 +1,7 @@
 #pragma once
 
 #include "raylib.h"
+#include <vector>
 
 class Dartboard
 {
@@ -9,6 +10,8 @@ class Dartboard
         void Draw();
         Vector2 GenerateHit();
         int GenerateScore(Vector2 hitPos);
+
+        std::vector<Vector2> GenerateAllSectors();
 
     private:
         void InitialiseSectors();

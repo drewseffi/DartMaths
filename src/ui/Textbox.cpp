@@ -27,10 +27,11 @@ void Textbox::Draw()
     Color textColor = RED;
 
     DrawRectangleRec(bounds, boxColor);
-    DrawText(text.c_str(), bounds.x, (bounds.y + (bounds.height-MeasureText(text.c_str(), 16)) / 2), 16, textColor);
+    float centerY = (bounds.y + (bounds.height) / 2) - 8;
+    DrawText(text.c_str(), bounds.x, centerY, 16, textColor);
 }
 
-std::string GetValue()
+std::string Textbox::GetValue()
 {
-
+    return text;
 }
