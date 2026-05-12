@@ -6,6 +6,8 @@
 
 #include "core/Dartboard.h"
 
+#include "ui/Textbox.h"
+
 class GameScene : public IScene
 {
     public:
@@ -17,4 +19,7 @@ class GameScene : public IScene
     private:
         Dartboard dartboard;
         std::vector<Vector2> hits;
+        std::vector<int> scores;
+
+        Textbox textbox;
 };
