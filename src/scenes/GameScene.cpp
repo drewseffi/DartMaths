@@ -15,12 +15,12 @@ GameScene::GameScene(SceneManager& manager)
         total(0),
         textboxWidth(350.0f),
         textboxHeight(32.0f),
-        textbox({400, 700, textboxWidth, textboxHeight}, "Please insert your answer", 10)
+        textbox({400, 730, textboxWidth, textboxHeight}, "Please insert your answer", 10)
 {
     currentState = GameState::THROWING;
-    textbox.AlignBox(MIDDLE, CENTER);
+    textbox.BoxOrigin(AlignHorizontal::CENTER, AlignVertical::CENTER);
     textbox.FontSize(24);
-    textbox.AlignText(LEFT, CENTER);
+    textbox.TextAlign(AlignHorizontal::CENTER, AlignVertical::CENTER);
 }
 
 void GameScene::Update(float dt)
@@ -47,7 +47,7 @@ void GameScene::Update(float dt)
         case GameState::WAITING_FOR_INPUT:
         {
             textbox.selected = true;
-            if (IsKeyPressed(KEY_ENTER))
+            if (textbox.inputReceived)
             {
                 answer = textbox.GetValue();
                 textbox.selected = false;

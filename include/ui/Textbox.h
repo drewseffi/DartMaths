@@ -3,14 +3,14 @@
 #include "raylib.h"
 #include <string>
 
-enum AlignHorizontal
+enum class AlignHorizontal
 {
     LEFT,
-    MIDDLE,
+    CENTER,
     RIGHT
 };
 
-enum AlignVertical
+enum class AlignVertical
 {
     TOP,
     CENTER,
@@ -27,14 +27,15 @@ class Textbox
         void Reset();
         void Resize(float width, float height);
         void Reposition(float x, float y);
-        void AlignText(AlignHorizontal h, AlignVertical v);
-        void AlignBox(AlignHorizontal h, AlignVertical v);
+        void TextAlign(AlignHorizontal h, AlignVertical v);
+        void BoxOrigin(AlignHorizontal h, AlignVertical v);
         void FontSize(int size);
 
         std::string GetValue();
 
         bool selected;
         bool scalable;
+        bool inputReceived;
 
     private:
         Rectangle bounds;
@@ -50,8 +51,13 @@ class Textbox
         AlignHorizontal boxHorizontal;
         AlignVertical boxVertical;
 
+        AlignHorizontal textAlign;
+
         void CalculateTextPos();
         void CalculateBoxPos();
+        
+        bool StringWillOverflow(std::string s);
+        bool ValidInput(std::string s);
 
         int fontSize;
         int padding;

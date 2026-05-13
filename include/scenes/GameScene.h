@@ -18,6 +18,7 @@ enum class GameState
     LOST,
     ROUND_END
 };
+
 class GameScene : public IScene
 {
     public:

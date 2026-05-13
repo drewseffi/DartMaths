@@ -9,15 +9,16 @@ Textbox::Textbox(Rectangle rect, std::string placeholderText, int stringPadding)
         padding(stringPadding),
         scalable(false),
         startingBounds(rect),
-        fontSize(16)
+        fontSize(16),
+        textBounds(bounds),
+        textAlign(AlignHorizontal::LEFT),
+        inputReceived(false)
 {
-    this->textHorizontal = LEFT;
-    this->textVerticle = TOP;
+    this->textHorizontal = AlignHorizontal::LEFT;
+    this->textVerticle = AlignVertical::TOP;
 
-    this->boxHorizontal = LEFT;
-    this->boxVertical = TOP;
-
-    this->textBounds = bounds;
+    this->boxHorizontal = AlignHorizontal::LEFT;
+    this->boxVertical = AlignVertical::TOP;
 }
 
 void Textbox::Reset()
@@ -25,6 +26,8 @@ void Textbox::Reset()
     text = placeholderText;
     showingPlaceholder = true;
     selected = false;
+    inputReceived = false;
+    CalculateTextPos();
 }
 
 void Textbox::Update()
@@ -41,16 +44,34 @@ void Textbox::Update()
             text.clear();
             showingPlaceholder = false;
         }
+        else if (showingPlaceholder && IsKeyPressed(KEY_BACKSPACE))
+        {
+            text.clear();
+            showingPlaceholder = false;
+        }
 
         while (key > 0)
         {
-            text += (char)key;
+            std::string textBuffer = text + (char)key;
+
+            if (!StringWillOverflow(textBuffer))
+            {
+                text += (char)key;
+                Textbox::CalculateTextPos();
+            }
+
             key = GetCharPressed();
         }
 
         if (IsKeyPressed(KEY_BACKSPACE) && text.size() > 0)
         {
             text.pop_back();
+            Textbox::CalculateTextPos();
+        }
+
+        if (IsKeyPressed(KEY_ENTER) && ValidInput(text))
+        {
+            inputReceived = true;
         }
     }
     else
@@ -61,7 +82,33 @@ void Textbox::Update()
 
     if (scalable)
     {
-        bounds = {bounds.x, bounds.y, (float)MeasureText(text.c_str(), 24) + (padding * 2), bounds.height};
+        bounds = {bounds.x, bounds.y, (float)MeasureText(text.c_str(), fontSize) + (padding * 2), bounds.height};
+    }
+}
+
+bool Textbox::ValidInput(std::string s)
+{
+    if (s.size() <= 3 && s.size() > 0)
+    {
+        if (s.find_first_not_of("0123456789") == std::string::npos && std::stoi(s) <= 180)
+        {
+            return true;
+        }
+    }
+
+    printf("No no no...\n");
+    return false;
+}
+
+bool Textbox::StringWillOverflow(std::string s)
+{
+    if (MeasureText(s.c_str(), fontSize) > bounds.width - (padding * 2))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
@@ -75,14 +122,14 @@ void Textbox::Reposition(float x, float y)
     bounds = {x, y, bounds.width, bounds.height};
 }
 
-void Textbox::AlignText(AlignHorizontal h, AlignVertical v)
+void Textbox::TextAlign(AlignHorizontal h, AlignVertical v)
 {
     textHorizontal = h;
     textVerticle = v;
     CalculateTextPos();
 }
 
-void Textbox::AlignBox(AlignHorizontal h, AlignVertical v)
+void Textbox::BoxOrigin(AlignHorizontal h, AlignVertical v)
 {
     boxHorizontal = h;
     boxVertical = v;
@@ -93,17 +140,17 @@ void Textbox::CalculateBoxPos()
 {
     switch (boxHorizontal)
     {
-        case LEFT:
+        case AlignHorizontal::LEFT:
         {
             bounds.x = startingBounds.x;
             break;
         }
-        case MIDDLE:
+        case AlignHorizontal::CENTER:
         {
             bounds.x = bounds.x - (bounds.width / 2);
             break;
         }
-        case RIGHT:
+        case AlignHorizontal::RIGHT:
         {
             bounds.x -= bounds.width;
             break;
@@ -112,17 +159,17 @@ void Textbox::CalculateBoxPos()
 
     switch (boxVertical)
     {
-        case TOP:
+        case AlignVertical::TOP:
         {
             bounds.y = startingBounds.y;
             break;
         }
-        case CENTER:
+        case AlignVertical::CENTER:
         {
             bounds.y = bounds.y - (bounds.height / 2);
             break;
         }
-        case BOTTOM:
+        case AlignVertical::BOTTOM:
         {
             bounds.y -= bounds.height;
             break;
@@ -134,36 +181,36 @@ void Textbox::CalculateTextPos()
 {
     switch (textHorizontal)
     {
-        case LEFT:
+        case AlignHorizontal::LEFT:
         {
             textBounds.x = bounds.x + padding;
             break;
         }
-        case MIDDLE:
+        case AlignHorizontal::CENTER:
         {
-            textBounds.x = bounds.x + (MeasureText(text.c_str(), fontSize) / 2);
+            textBounds.x = (bounds.x + bounds.width / 2) - (MeasureText(text.c_str(), fontSize) / 2);
             break;
         }
-        case RIGHT:
+        case AlignHorizontal::RIGHT:
         {
-            textBounds.x = bounds.x + bounds.width - padding;
+            textBounds.x = bounds.x + bounds.width - padding - MeasureText(text.c_str(), fontSize);
             break;
         }
     }
 
     switch (textVerticle)
     {
-        case TOP:
+        case AlignVertical::TOP:
         {
             textBounds.y = bounds.y;
             break;
         }
-        case CENTER:
+        case AlignVertical::CENTER:
         {
             textBounds.y = bounds.y + (bounds.height - fontSize) / 2;
             break;
         }
-        case BOTTOM:
+        case AlignVertical::BOTTOM:
         {
             textBounds.y = bounds.y + bounds.height - fontSize;
             break;
