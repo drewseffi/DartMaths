@@ -6,30 +6,86 @@
 #include "raylib.h"
 #include <string>
 
-GameScene::GameScene(SceneManager& manager): IScene(manager), dartboard({400, 400}, 300.0f), textbox({400, 700, 200, 32}, "Please enter number")
+GameScene::GameScene(SceneManager& manager): IScene(manager), dartboard({400, 400}, 300.0f), textbox({400, 700, 200, 32}, "Please enter number"), spawnInterval(1.0f), timer(0.0f), currentDart(0), total(0)
 {
-
+    currentState = GameState::THROWING;
 }
 
 void GameScene::Update(float dt)
 {
-    if (IsKeyPressed(KEY_ESCAPE))
+    switch(currentState)
     {
-        sceneManager.ChangeScene(std::make_unique<MainMenuScene>(sceneManager));
-    }
+        case GameState::THROWING:
+        {
+            timer += dt;
+            if (timer >= spawnInterval)
+            {
+                hits.push_back(dartboard.GenerateHit());
+                scores.push_back(dartboard.GenerateScore(hits.back()));
+                currentDart++;
+                timer = 0;
+            }
 
-    if (IsKeyPressed(KEY_E))
-    {
-        hits.push_back(dartboard.GenerateHit());
-        scores.push_back(dartboard.GenerateScore(hits.back()));
+            if (currentDart == 3)
+            {
+                currentState = GameState::WAITING_FOR_INPUT;
+            }
+            break;
+        }
+        case GameState::WAITING_FOR_INPUT:
+        {
+            textbox.selected = true;
+            if (IsKeyPressed(KEY_ENTER))
+            {
+                answer = textbox.GetValue();
+                textbox.selected = false;
+                currentState = GameState::CHECKING_ANSWER;
+            }
+            break;
+        }
+        case GameState::CHECKING_ANSWER:
+        {
+            for (int i = 0; i < hits.size(); i++)
+            {
+                total += scores[i];
+            }
 
-        printf("%i\n", scores.back());
-    }
+            if (std::stoi(answer) == total)
+            {
+                currentState = GameState::WON;
+            }
+            else
+            {
+                currentState = GameState::LOST;
+            }
+            break;
+        }
+        case GameState::WON:
+        {
+            printf("You won!\n");
+            currentState = GameState::ROUND_END;
+            break;
+        }
+        case GameState::LOST:
+        {
+            printf("You lost!\n");
+            currentState = GameState::ROUND_END;
+            break;
+        }
+        case GameState::ROUND_END:
+        {
+            printf("Restarting...\n");
+            timer = 0;
+            currentDart = 0;
+            hits.clear();
+            scores.clear();
+            total = 0;
 
-    if (IsKeyPressed(KEY_ENTER))
-    {
-        std::string result = textbox.GetValue();
-        printf("%s\n", result);
+            textbox.Reset();
+
+            currentState = GameState::THROWING;
+            break;
+        }
     }
 
     if (IsKeyPressed(KEY_D))
@@ -49,20 +105,13 @@ void GameScene::Draw()
 {
     dartboard.Draw();
 
+    Color highlightColor = WHITE;
     Color dartColor = ORANGE;
 
     for (int i = 0; i < hits.size(); i++)
     {
-        if (i % 2 == 0) 
-        {
-            dartColor = SKYBLUE;
-        }
-        else 
-        {
-            dartColor = ORANGE;
-        }
-    
-        DrawCircle(hits[i].x, hits[i].y, 5.0f, dartColor);
+        DrawCircle(hits[i].x, hits[i].y, 5.0f, highlightColor);
+        DrawCircle(hits[i].x, hits[i].y, 4.0f, dartColor);
     }
 
     textbox.Draw();

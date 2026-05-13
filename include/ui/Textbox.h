@@ -10,12 +10,19 @@ class Textbox
 
         void Update();
         void Draw();
+        void Reset();
 
         std::string GetValue();
+
+        bool selected;
 
     private:
         Rectangle bounds;
         std::string text;
+        std::string placeholderText;
 
-        bool selected;
+        bool showingPlaceholder;
+
+        Color boxColor;
+        Color textColor;
 };
