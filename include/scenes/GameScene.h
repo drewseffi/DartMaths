@@ -31,6 +31,9 @@ class GameScene : public IScene
         std::vector<Vector2> hits;
         std::vector<int> scores;
 
+
+        float textboxWidth;
+        float textboxHeight;
         Textbox textbox;
 
         float spawnInterval;

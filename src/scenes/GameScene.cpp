@@ -6,9 +6,21 @@
 #include "raylib.h"
 #include <string>
 
-GameScene::GameScene(SceneManager& manager): IScene(manager), dartboard({400, 400}, 300.0f), textbox({400, 700, 200, 32}, "Please enter number"), spawnInterval(1.0f), timer(0.0f), currentDart(0), total(0)
+GameScene::GameScene(SceneManager& manager)
+    :   IScene(manager), 
+        dartboard({400, 400}, 300.0f), 
+        spawnInterval(1.0f), 
+        timer(0.0f), 
+        currentDart(0), 
+        total(0),
+        textboxWidth(350.0f),
+        textboxHeight(32.0f),
+        textbox({400, 700, textboxWidth, textboxHeight}, "Please insert your answer", 10)
 {
     currentState = GameState::THROWING;
+    textbox.AlignBox(MIDDLE, CENTER);
+    textbox.FontSize(24);
+    textbox.AlignText(LEFT, CENTER);
 }
 
 void GameScene::Update(float dt)
