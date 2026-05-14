@@ -8,7 +8,7 @@
 
 GameScene::GameScene(SceneManager& manager)
     :   IScene(manager), 
-        dartboard({400, 400}, 300.0f), 
+        dartboard({400, 350}, 300.0f), 
         spawnInterval(1.0f), 
         timer(0.0f), 
         currentDart(0), 
@@ -123,7 +123,7 @@ void GameScene::Draw()
     for (int i = 0; i < hits.size(); i++)
     {
         DrawCircle(hits[i].x, hits[i].y, 5.0f, highlightColor);
-        DrawCircle(hits[i].x, hits[i].y, 4.0f, dartColor);
+        DrawCircle(hits[i].x, hits[i].y, 3.0f, dartColor);
     }
 
     textbox.Draw();

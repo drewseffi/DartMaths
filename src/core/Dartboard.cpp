@@ -1,8 +1,8 @@
 #include "core/Dartboard.h"
 
 #include <math.h>
-
 #include <stdio.h>
+#include <string>
 
 Dartboard::Dartboard(Vector2 center, float radius)
 {
@@ -153,5 +153,21 @@ void Dartboard::DrawBullseye()
 
 void Dartboard::DrawNumbers()
 {
+    for (int i = 0; i < 20; i++)
+    {
+        Vector2 num;
 
+        float angle = (sectors[i].startAngle + 9.0f) * DEG2RAD;
+        float distance = radius + 25.0f;
+
+        num.x = center.x + cos(angle) * distance;
+        num.y = center.y + sin(angle) * distance;
+
+        std::string text = std::to_string(sectors[i].value);
+
+        num.x = num.x - (MeasureText(text.c_str(), 22) / 2);
+        num.y -= (22.0f / 2);
+
+        DrawText(text.c_str(), num.x, num.y, 22, WHITE);
+    }
 }
