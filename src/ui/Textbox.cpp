@@ -12,7 +12,9 @@ Textbox::Textbox(Rectangle rect, std::string placeholderText, int stringPadding)
         fontSize(16),
         textBounds(bounds),
         textAlign(AlignHorizontal::LEFT),
-        inputReceived(false)
+        inputReceived(false),
+        numerical(false),
+        allowSpecialCharacters(true)
 {
     this->textHorizontal = AlignHorizontal::LEFT;
     this->textVerticle = AlignVertical::TOP;
@@ -33,6 +35,11 @@ void Textbox::Reset()
 void Textbox::Update()
 {
     int key = GetCharPressed();
+
+    if(showingPlaceholder)
+    {
+        CalculateTextPos();
+    }
 
     if (selected)
     {
@@ -88,16 +95,29 @@ void Textbox::Update()
 
 bool Textbox::ValidInput(std::string s)
 {
-    if (s.size() <= 3 && s.size() > 0)
+    std::string allowed;
+
+    if (numerical)
     {
-        if (s.find_first_not_of("0123456789") == std::string::npos && std::stoi(s) <= 180)
-        {
-            return true;
-        }
+        allowed = "0123456789";
+    }
+    else if (!allowSpecialCharacters)
+    {
+        allowed =
+            "abcdefghijklmnopqrstuvwxyz"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "0123456789"
+            "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+    }
+    else
+    {
+        allowed =
+            "abcdefghijklmnopqrstuvwxyz"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "0123456789 ";
     }
 
-    printf("No no no...\n");
-    return false;
+    return s.find_first_not_of(allowed) == std::string::npos;
 }
 
 bool Textbox::StringWillOverflow(std::string s)
@@ -216,11 +236,6 @@ void Textbox::CalculateTextPos()
             break;
         }
     }
-}
-
-void Textbox::FontSize(int size)
-{
-    fontSize = size;
 }
 
 void Textbox::Draw()

@@ -29,13 +29,16 @@ class Textbox
         void Reposition(float x, float y);
         void TextAlign(AlignHorizontal h, AlignVertical v);
         void BoxOrigin(AlignHorizontal h, AlignVertical v);
-        void FontSize(int size);
 
         std::string GetValue();
 
         bool selected;
         bool scalable;
         bool inputReceived;
+        bool numerical;
+        bool allowSpecialCharacters;
+
+        int fontSize;
 
     private:
         Rectangle bounds;
@@ -59,7 +62,6 @@ class Textbox
         bool StringWillOverflow(std::string s);
         bool ValidInput(std::string s);
 
-        int fontSize;
         int padding;
 
         bool showingPlaceholder;

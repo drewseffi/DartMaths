@@ -19,8 +19,10 @@ GameScene::GameScene(SceneManager& manager)
 {
     currentState = GameState::THROWING;
     textbox.BoxOrigin(AlignHorizontal::CENTER, AlignVertical::CENTER);
-    textbox.FontSize(24);
     textbox.TextAlign(AlignHorizontal::CENTER, AlignVertical::CENTER);
+    textbox.allowSpecialCharacters = false;
+    textbox.numerical = true;
+    textbox.fontSize = 24;
 }
 
 void GameScene::Update(float dt)
@@ -51,8 +53,17 @@ void GameScene::Update(float dt)
             if (textbox.inputReceived)
             {
                 answer = textbox.GetValue();
-                textbox.selected = false;
-                currentState = GameState::CHECKING_ANSWER;
+                if (answer.size() > 3 || std::stoi(answer) > 180 || std::stoi(answer) <= 0)
+                {
+                    textbox.Reset();
+                    textbox.selected = true;
+                    answer = textbox.GetValue();
+                }
+                else
+                {
+                    textbox.selected = false;
+                    currentState = GameState::CHECKING_ANSWER;
+                }
             }
             break;
         }
