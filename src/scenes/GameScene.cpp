@@ -40,6 +40,7 @@ void GameScene::Update(float dt)
 
             if (currentDart == 3)
             {
+                timer = 0;
                 currentState = GameState::WAITING_FOR_INPUT;
             }
             break;
@@ -74,14 +75,22 @@ void GameScene::Update(float dt)
         }
         case GameState::WON:
         {
-            printf("You won!\n");
-            currentState = GameState::ROUND_END;
+            timer += dt;
+
+            if (timer >= 2.5f)
+            {
+                currentState = GameState::ROUND_END;
+            }
             break;
         }
         case GameState::LOST:
         {
-            printf("You lost!\n");
-            currentState = GameState::ROUND_END;
+            timer += dt;
+
+            if (timer >= 2.5f)
+            {
+                currentState = GameState::ROUND_END;
+            }
             break;
         }
         case GameState::ROUND_END:
@@ -110,21 +119,46 @@ void GameScene::Update(float dt)
         }
     }
 
+    if (IsKeyPressed(KEY_ESCAPE))
+    {
+        sceneManager.ChangeScene(std::make_unique<MainMenuScene>(sceneManager));
+    }
+
     textbox.Update();
 }
 
 void GameScene::Draw()
 {
-    dartboard.Draw();
-
-    Color highlightColor = WHITE;
-    Color dartColor = ORANGE;
-
-    for (int i = 0; i < hits.size(); i++)
+    if (currentState != GameState::WON || currentState != GameState::LOST)
     {
-        DrawCircle(hits[i].x, hits[i].y, 5.0f, highlightColor);
-        DrawCircle(hits[i].x, hits[i].y, 3.0f, dartColor);
+        dartboard.Draw(); 
+
+        Color highlightColor = WHITE;
+        Color dartColor = ORANGE;
+
+        for (int i = 0; i < hits.size(); i++)
+        {
+            DrawCircle(hits[i].x, hits[i].y, 5.0f, highlightColor);
+            DrawCircle(hits[i].x, hits[i].y, 3.0f, dartColor);
+        }
+
+        textbox.Draw();
     }
 
-    textbox.Draw();
+    switch (currentState)
+    {
+        case GameState::LOST:
+        {
+            std::string text = "You lost!\nCorrect score was: " + std::to_string(total);
+            DrawText(text.c_str(), 400 - MeasureText(text.c_str(), 32) / 2, 350 - 32, 32, WHITE);
+            break;
+        }
+
+        case GameState::WON:
+        {
+            DrawText("You won!", 400 - MeasureText("You won!", 32) / 2, 350 - 32, 32, WHITE);
+            break;
+        }
+    }
+    
 }
